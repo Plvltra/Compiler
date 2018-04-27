@@ -1,4 +1,4 @@
-package lexer;
+package lexer.token;
 
 import dataType.FinalSymbol;
 import dataType.Symbol;
@@ -7,22 +7,22 @@ public class FinalToken implements AbstractToken {
 	
 	// Attributes
 	protected FinalSymbol symbol;
-	protected int rowNum;
-	protected String content;
+	protected Position position;
+	public String content; // TODO: change modifier
 	
 	// Constructors
-	public FinalToken(FinalSymbol symbol, int rowNum, String content) {
+	public FinalToken(FinalSymbol symbol, Position position, String content) {
 		if (symbol == null || content == null) {
 			throw new IllegalArgumentException();
 		}
 		this.symbol = symbol;
-		this.rowNum = rowNum;
+		this.position = position.clone();
 		this.content = content;
 	}
 	
 	public FinalToken(FinalSymbol symbol) {
 		this.symbol = symbol;
-		rowNum = 0;
+		this.position = Position.unknown();
 		content = "";
 	}
 
@@ -32,23 +32,23 @@ public class FinalToken implements AbstractToken {
 	
 	// Functions
 	@Override
-	public Symbol getSymbol(){
+	public FinalSymbol getSymbol(){
 		return this.symbol;
 	}
 	
 	@Override
-	public void setRow(int rowNum) {
-		this.rowNum = rowNum;
+	public void setPosition(Position position) {
+		this.position = position;
 	}
 	
 	@Override
-	public int getRow() {
-		return this.rowNum;
+	public Position getPosition() {
+		return this.position;
 	}
 	
 	@Override
 	public String toString(){
-		return " symbol:" + symbol.name() + " rowNum:" + rowNum
+		return " symbol:" + symbol.name() + " position:" + position.toString()
 				+ " content:" + content; 
 	}
 	

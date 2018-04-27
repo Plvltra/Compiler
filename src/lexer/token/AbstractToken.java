@@ -1,4 +1,4 @@
-package lexer;
+package lexer.token;
 
 import dataType.Symbol;
 
@@ -7,9 +7,9 @@ public interface AbstractToken {
 	// Functions
 	Symbol getSymbol();
 
-	void setRow(int rowNum);
+	void setPosition(Position position);
 
-	int getRow();
+	Position getPosition();
 
 	String toString();
 

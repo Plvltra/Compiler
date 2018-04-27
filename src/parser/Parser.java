@@ -6,11 +6,12 @@ import java.util.Stack;
 import dataType.CombineSymbol;
 import dataType.FinalSymbol;
 import debuger.Debuger;
-import lexer.AbstractToken;
-import lexer.CombineToken;
-import lexer.FinalToken;
 import lexer.Lexer;
-import lexer.TokenFactory;
+import lexer.token.AbstractToken;
+import lexer.token.CombineToken;
+import lexer.token.FinalToken;
+import parser.node.Node;
+import parser.node.NodeFactory;
 
 
 //prog = expr'\0'
@@ -42,25 +43,34 @@ public class Parser {
 	// Functions
 	public boolean check(){
 		Stack<Object> stack = new Stack<Object>(); // 仅能包含Integer和AbstractToken
+		Stack<Node> nodeStack = new Stack<Node>();
 		stack.push(0);
 		for(int i = 0; i < tokens.size(); i++){
 			FinalToken token = tokens.get(i);
-			boolean success = pushToken(stack, token);
+			boolean success = 
+					pushToken(stack, nodeStack, token, NodeFactory.createFinalNode(token));
 			if (!success) {
 				return false;
 			}
 		}
+		Node node = nodeStack.peek();
+		System.out.println(node.getValue());
 		return true;
 	}
 
+	// TODO:stack的push,pop符号与nodeStack的push,pop节点捆绑 
+	
 	/**
-	 * 假设栈顶存在一个数字符号为当前状态，压入一个符号根据规则对栈中进行处理，
+	 * 栈顶第一个数字符号为当前状态，压入一个符号根据规则对栈中进行处理，
 	 * 最后栈顶为下一步起始状态
 	 * @param stack
+	 * @param nodeStack
 	 * @param received
 	 * @return
 	 */
-	private boolean pushToken(Stack<Object> stack, AbstractToken token) {
+	private boolean pushToken(
+			Stack<Object> stack, Stack<Node> nodeStack, AbstractToken token, Node node) {//token与node对应
+		
 		int currID = (int) stack.peek(); // 当前状态号
 		Status nextStatus = table.jump(currID, token.getSymbol());
 		if (nextStatus == null) {
@@ -69,13 +79,14 @@ public class Parser {
 		} else if (nextStatus.action == Action.shift 
 				|| nextStatus.action == Action.goTo) {
 			stack.push(token);
+			nodeStack.push(node);
 			stack.push(nextStatus.target);
 			debuger.println("push token->" + token.toString());
 			return true;
 		} else if (nextStatus.action == Action.reduce) {
 			int ruleID = nextStatus.target; 
-			boolean success1 = reduce(stack, ruleID);
-			boolean success2 = pushToken(stack, token);
+			boolean success1 = reduce(stack, nodeStack, ruleID);
+			boolean success2 = pushToken(stack, nodeStack, token, node);
 			return success1 && success2; // 猜测成功取决于两步成功
 		} else {						 // accept
 			return true;
@@ -83,24 +94,33 @@ public class Parser {
 	}
 	
 	/**
-	 * 假设栈顶存在一个数字符号为当前状态，按规则归约栈顶(直到遇到规则右侧第一个符号前的状态)，
+	 * 栈顶第一个数字符号为当前状态，按规则归约栈顶(直到遇到规则右侧第一个符号前的状态)，
 	 * 再压入归约所得符号
 	 * @param stack
 	 * @param ruleID
 	 * @return
 	 */
-	private boolean reduce(Stack<Object> stack, int ruleID) {
+	private boolean reduce(
+			Stack<Object> stack, Stack<Node> nodeStack, int ruleID) {
+		
 		Term rule = Define.getRule(ruleID);
 		int num = rule.right.size(); // 规则右侧符号数
 		num *= 2;					 // pop数量是符号数+状态数(符号数=状态数)
+		Node[] nodes = new Node[num];
 		while (num-- > 0) {
-			stack.pop();
+			if (num % 2 != 0) {  // num奇数为符号
+				stack.pop();
+				Node node = nodeStack.pop();
+				nodes[num/2] = node;
+			} else {
+				stack.pop();
+			}
 		}
+		Node gotNode = NodeFactory.createNode(nodes,ruleID);
 		CombineSymbol symbol = rule.left;
-		int rowNum = 0; // FIXME: symbol->token  确定rowNum
-		CombineToken token = new CombineToken(symbol, rowNum);
+		CombineToken token = new CombineToken(symbol); // FIXME:确定添加token的位置
 		debuger.println("reduce->" + token.toString());
-		return pushToken(stack, token);
+		return pushToken(stack, nodeStack, token, gotNode);
 	}
 	
 	public static void main(String args[]) {

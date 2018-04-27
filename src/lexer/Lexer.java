@@ -2,10 +2,8 @@ package lexer;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.rmi.UnexpectedException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,12 +11,15 @@ import java.util.regex.Pattern;
 import dataType.FinalSymbol;
 import dataType.SymbolTool;
 import debuger.Debuger;
+import lexer.token.FinalToken;
+import lexer.token.Position;
+import lexer.token.TokenFactory;
 
 public class Lexer {
 	//------------------ Static part ----------------------// 
 	private static final Pattern pattern;
 	// 打印匹配模式串，字符串，以及匹配结果
-	private static Debuger debuger = new Debuger(false);
+	private static Debuger debuger = new Debuger(true);
 	// build patternStr
 	static {
 		String patternStr = "";
@@ -51,16 +52,16 @@ public class Lexer {
 		ArrayList<FinalToken> finalTokens = new ArrayList<FinalToken>();
 		int size = matchStr.length();
 		int index = 0;
-		int rowNum = 1;
+		Position currPos = new Position(1);
 		while (index < size) {
 			debuger.println("匹配开始位置: " + index);
-			FinalToken finalToken = nextFinalToken(index, rowNum);
+			FinalToken finalToken = nextFinalToken(index, currPos);
 			if (finalToken == null) {
-				System.out.println("源文本第" + rowNum + "行处出现无法匹配部分");
+				System.out.println(currPos.toString() + "处出现无法匹配部分");
 				System.exit(0);
-			} else if (finalToken.symbol == FinalSymbol.NEW_LINE) {
-				rowNum++;
-			} else if (finalToken.symbol != FinalSymbol.SPACE) {
+			} else if (finalToken.getSymbol() == FinalSymbol.NEW_LINE) {
+				currPos = currPos.nextRow();
+			} else if (finalToken.getSymbol() != FinalSymbol.SPACE) {
 				finalTokens.add(finalToken);
 			}
 			index += finalToken.length();
@@ -71,10 +72,11 @@ public class Lexer {
 
 	/**
 	 * 从源字符串匹配下一个token
-	 * @param index:匹配开始(inclusive)
+	 * @param index 源代码匹配开始的字符串位置(inclusive)
+	 * @param position 源文件中的位置信息
 	 * @return 匹配的符号, null表示遇到无法匹配的
 	 */
-	private FinalToken nextFinalToken(int index, int rowNum) {
+	private FinalToken nextFinalToken(int index, Position position) {
 		if (index >= matchStr.length()) {
 			throw new IndexOutOfBoundsException();
 		}
@@ -90,7 +92,7 @@ public class Lexer {
 					int symbolID = groupID - 1; // groupID为组号，从1开始，而symbol从0开始
 					FinalSymbol finalSymbol = SymbolTool.get(symbolID);
 					FinalSymbol realFinalSymbol = dealConflict(finalSymbol, content);
-					ans = TokenFactory.makeFinalToken(realFinalSymbol, rowNum, content);
+					ans = TokenFactory.makeFinalToken(realFinalSymbol, position, content);
 				}
 			}
 			
@@ -147,12 +149,13 @@ public class Lexer {
 		} 
 	}
 	
-//	public static void main(String args[]) {
-//		Lexer lexer = new Lexer("C:/Users/asus/Desktop/code.txt");
-//		ArrayList<FinalToken> finalTokens = lexer.tokenize();
-//		debuger.println("-----------匹配结果--------------");
-//		for(AbstractToken token : finalTokens){
-//			debuger.println(token.toString());
-//		}
-//	}
+	public static void main(String args[]) {
+		Lexer lexer = new Lexer("C:/Users/asus/Desktop/code.txt");
+		ArrayList<FinalToken> finalTokens = lexer.tokenize();
+		debuger.println("-----------匹配结果--------------");
+		for(FinalToken token : finalTokens){
+			debuger.println(token.toString());
+		}
+	}
+	
 }

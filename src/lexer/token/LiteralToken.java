@@ -1,4 +1,4 @@
-package lexer;
+package lexer.token;
 
 import dataType.FinalSymbol;
 
@@ -6,8 +6,8 @@ import dataType.FinalSymbol;
 public abstract class LiteralToken<Type> extends FinalToken {
 	
 	// Functions
-	public LiteralToken(FinalSymbol finalSymbol, int rowNum, String content) {
-		super(finalSymbol, rowNum, content);
+	public LiteralToken(FinalSymbol finalSymbol, Position position, String content) {
+		super(finalSymbol, position, content);
 	}
 
 	/** 返回类型内容对应的实际值  */
@@ -17,8 +17,8 @@ public abstract class LiteralToken<Type> extends FinalToken {
 
 class DoubleToken extends LiteralToken<Double> {
 
-	public DoubleToken(FinalSymbol finalSymbol, int rowNum, String content) {
-		super(finalSymbol, rowNum, content);
+	public DoubleToken(FinalSymbol finalSymbol, Position position, String content) {
+		super(finalSymbol, position, content);
 	}
 
 	@Override
@@ -31,8 +31,8 @@ class DoubleToken extends LiteralToken<Double> {
 
 class StringToken extends LiteralToken<String>{
 
-	public StringToken(FinalSymbol finalSymbol, int rowNum, String content) {
-		super(finalSymbol, rowNum, content);
+	public StringToken(FinalSymbol finalSymbol, Position position, String content) {
+		super(finalSymbol, position, content);
 	}
 	
 	@Override
@@ -44,8 +44,8 @@ class StringToken extends LiteralToken<String>{
 
 class IntToken extends LiteralToken<Integer> {
 
-	public IntToken(FinalSymbol finalSymbol, int rowNum, String content) {
-		super(finalSymbol, rowNum, content);
+	public IntToken(FinalSymbol finalSymbol, Position position, String content) {
+		super(finalSymbol, position, content);
 	}
 
 	@Override
