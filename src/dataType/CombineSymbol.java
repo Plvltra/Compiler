@@ -3,8 +3,13 @@ package dataType;
 public enum CombineSymbol implements Symbol{
 	// TODO: change combineSymbol
 	sp,
-	expr,
-	term,
+	program,
+	statement,
+	defineStatm,
+	assighStatm,
+	ifStatm,
+	elseStatm,
+	body,
 	;
 	
 	//test1

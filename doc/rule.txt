@@ -1,0 +1,16 @@
+0.	sp -> program  DOLLAR 
+1.	program -> program  statement
+2.	program -> 
+
+3.	statement -> assighStatm
+4.	statement -> defineStatm
+5.	statement -> ifStatm
+
+6.	assighStatm -> IDENTIFIER  ASSIGN  CONST_INT  SEMICOLON
+7.	defineStatm -> STRING  IDENTIFIER  SEMICOLON
+8.	ifStatm -> IF  LPAREN  CONST_TRUE  RPAREN  body
+9.	ifStatm -> IF  LPAREN  CONST_TRUE  RPAREN  body  elseStatm
+10.	elseStatm -> ELSE  ifStatm
+11.	elseStatm -> body
+12.	body -> LBRACE  program  RBRACE
+13.	body -> statement

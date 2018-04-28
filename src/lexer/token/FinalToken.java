@@ -1,7 +1,6 @@
 package lexer.token;
 
 import dataType.FinalSymbol;
-import dataType.Symbol;
 
 public class FinalToken implements AbstractToken {
 	

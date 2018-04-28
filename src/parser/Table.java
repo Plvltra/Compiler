@@ -8,7 +8,8 @@ import java.util.Queue;
 import dataType.FinalSymbol;
 import dataType.Symbol;
 import dataType.SymbolList;
-import debuger.Debuger;
+import util.Debuger;
+import util.NotNullLinkedList;
 	
 /**
  * 根据Define里的规则
@@ -61,6 +62,10 @@ public class Table {
 			s += row.toString() + "\n";
 		}
 		return s;
+	}
+	
+	public Row getRow(int index) {
+		return table.get(index);
 	}
 	
 	/**

@@ -1,7 +1,6 @@
 package lexer.token;
 
 import dataType.CombineSymbol;
-import dataType.Symbol;
 
 public class CombineToken implements AbstractToken{
 

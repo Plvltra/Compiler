@@ -1,0 +1,7 @@
+string a;
+if (true)
+{
+string a8;
+ a8 = 1;
+}
+

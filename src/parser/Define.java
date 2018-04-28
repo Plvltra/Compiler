@@ -1,44 +1,29 @@
 package parser;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Queue;
+
+import javax.swing.text.StyledEditorKit.ForegroundAction;
 
 import dataType.CombineSymbol;
 import dataType.FinalSymbol;
 import dataType.Symbol;
 import dataType.SymbolList;
-import debuger.Debuger;
+import dataType.SymbolTool;
+import util.Constant;
+import util.Debuger;
+import util.FileUtil;
+import util.NotNullLinkedList;
+import util.StringUtil;
 
 enum Action{
 	shift,
 	goTo,
 	reduce,
 	accept;
-}
-
-/** 插入成员为空 */
-@SuppressWarnings("serial")
-class NotNullLinkedList<E> extends LinkedList<E> {
-	@Override
-	public boolean add(E e) {
-		if (e == null) {
-			throw new NullPointerException();
-		} else {
-			return super.add(e);	
-		}
-	}
-	
-	public NotNullLinkedList() {
-		super();
-	}
-	
-	public NotNullLinkedList(Collection<? extends E> c) {
-		super(c);
-	}
 }
 
 /**
@@ -61,7 +46,7 @@ public class Define{
 		srcTerm = new Term();
 		srcTerm.ruleID = 0;
 		srcTerm.left = CombineSymbol.sp;
-		srcTerm.add(CombineSymbol.expr);
+		srcTerm.add(CombineSymbol.program);
 		srcTerm.insert(FinalSymbol.DOLLAR); // DOLLAR不放入expected会导致第一项没有expected集
 											// 无法接受字符
 		buildRule();
@@ -73,8 +58,7 @@ public class Define{
 	}
 	
 	protected static void buildRule() {
-		rules = new ArrayList<Term>();
-		
+		rules = RuleAnalyser.resolveRule();
 		// TODO: change rule
 		//test1
 //		Term term0 = new Term();
@@ -111,52 +95,52 @@ public class Define{
 //		rules.add(term3);
 //		rules.add(term4);
 //		rules.add(term5);
-		
 		//test2
-		Term term0 = new Term();
-		term0.ruleID = 0;
-		term0.setLeft(CombineSymbol.sp);
-		term0.add(CombineSymbol.expr);
-		term0.add(FinalSymbol.DOLLAR);
-		Term term1 = new Term();
-		term1.ruleID = 1;
-		term1.setLeft(CombineSymbol.expr);
-		term1.add(CombineSymbol.expr);
-		term1.add(FinalSymbol.PLUS);
-		term1.add(CombineSymbol.term);		
-		Term term2 = new Term();
-		term2.ruleID = 2;
-		term2.setLeft(CombineSymbol.expr);
-		term2.add(CombineSymbol.expr);
-		term2.add(FinalSymbol.MINUS);
-		term2.add(CombineSymbol.term);
-		Term term3 = new Term();
-		term3.ruleID = 3;
-		term3.setLeft(CombineSymbol.expr);
-		term3.add(CombineSymbol.term);
-		Term term4 = new Term();
-		term4.ruleID = 4;
-		term4.setLeft(CombineSymbol.term);
-		term4.add(CombineSymbol.term);
-		term4.add(FinalSymbol.MULTI);
-		term4.add(FinalSymbol.CONST_INT);		
-		Term term5 = new Term();
-		term5.ruleID = 5;
-		term5.setLeft(CombineSymbol.term);
-		term5.add(CombineSymbol.term);
-		term5.add(FinalSymbol.DIVIDE);
-		term5.add(FinalSymbol.CONST_INT);
-		Term term6 = new Term();
-		term6.ruleID = 6;
-		term6.setLeft(CombineSymbol.term);
-		term6.add(FinalSymbol.CONST_INT);
-		rules.add(term0);
-		rules.add(term1);
-		rules.add(term2);
-		rules.add(term3);
-		rules.add(term4);
-		rules.add(term5);
-		rules.add(term6);
+//		Term term0 = new Term();
+//		term0.ruleID = 0;
+//		term0.setLeft(CombineSymbol.sp);
+//		term0.add(CombineSymbol.expr);
+//		term0.add(FinalSymbol.DOLLAR);
+//		Term term1 = new Term();
+//		term1.ruleID = 1;
+//		term1.setLeft(CombineSymbol.expr);
+//		term1.add(CombineSymbol.expr);
+//		term1.add(FinalSymbol.PLUS);
+//		term1.add(CombineSymbol.term);		
+//		Term term2 = new Term();
+//		term2.ruleID = 2;
+//		term2.setLeft(CombineSymbol.expr);
+//		term2.add(CombineSymbol.expr);
+//		term2.add(FinalSymbol.MINUS);
+//		term2.add(CombineSymbol.term);
+//		Term term3 = new Term();
+//		term3.ruleID = 3;
+//		term3.setLeft(CombineSymbol.expr);
+//		term3.add(CombineSymbol.term);
+//		Term term4 = new Term();
+//		term4.ruleID = 4;
+//		term4.setLeft(CombineSymbol.term);
+//		term4.add(CombineSymbol.term);
+//		term4.add(FinalSymbol.MULTI);
+//		term4.add(FinalSymbol.CONST_INT);		
+//		Term term5 = new Term();
+//		term5.ruleID = 5;
+//		term5.setLeft(CombineSymbol.term);
+//		term5.add(CombineSymbol.term);
+//		term5.add(FinalSymbol.DIVIDE);
+//		term5.add(FinalSymbol.CONST_INT);
+//		Term term6 = new Term();
+//		term6.ruleID = 6;
+//		term6.setLeft(CombineSymbol.term);
+//		term6.add(FinalSymbol.CONST_INT);
+//		rules.add(term0);
+//		rules.add(term1);
+//		rules.add(term2);
+//		rules.add(term3);
+//		rules.add(term4);
+//		rules.add(term5);
+//		rules.add(term6);
+
 	}
 	
 	protected static void buildNullable() {
@@ -330,8 +314,73 @@ public class Define{
 		}
 		debuger.println();
 	}
+	
+}
 
-	public static void main(String[] args){
-		
+class RuleAnalyser {
+	
+	public static ArrayList<Term> resolveRule() {
+		ArrayList<String> lines = FileUtil.readLine(Constant.ruleFile);
+		ArrayList<Term> rules = new ArrayList<Term>();
+		int size = lines.size();
+		for(int i = 0; i < size; i++) {
+			try { 
+				String line = lines.get(i);
+				if (!StringUtil.isBlank(line)) {
+					Term rule = resolve(line);
+					rules.add(rule);
+				}
+				System.out.println("一次");
+			} catch (UnresolvedNameException e) {
+				System.out.println("解析规则出错行号: 第" + i + "行 " + e.toString()); // 从0行开始
+				System.exit(0);
+			}
+		}			
+		return rules;
 	}
+	
+	/**
+	 * @param line: 一行内容
+	 * @return 对应规则
+	 * @throws UnresolvedNameException 
+	 */
+	private static Term resolve(String line) throws UnresolvedNameException {
+		String[] names = line.split("\\s+");
+		String intString = names[0].substring(0, names[0].length()-1); // 删除.号
+		int ruleID = Integer.parseInt(intString);
+		CombineSymbol left = (CombineSymbol) find(names[1]);
+		// names[2] = "->"
+		ArrayList<Symbol> right = new ArrayList<Symbol>();
+		for(int i = 3; i < names.length; i++) {
+			Symbol symbol = find(names[i]);
+			right.add(symbol);
+		}
+		return new Term(ruleID, left, right);
+	}
+	
+	private static Symbol find(String symbolName) throws UnresolvedNameException {
+		for(Symbol symbol : SymbolList.values()) {
+			if (symbol.name().equals(symbolName)) {
+			//if (symbol.name() == symbolName) {
+				System.out.println("ok:" + symbolName);
+				return symbol;
+			}
+		}
+		throw new UnresolvedNameException(symbolName);
+	}
+	
+	@SuppressWarnings("serial")
+	private static class UnresolvedNameException extends Exception{
+		private String name;
+		
+		public UnresolvedNameException(String name) {
+			this.name = name;
+		}
+		
+		@Override
+		public String toString() {
+			return "无法找到的符号名 :" + name;
+		}
+	}
+	
 }

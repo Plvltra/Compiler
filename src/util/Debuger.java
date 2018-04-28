@@ -1,4 +1,4 @@
-package debuger;
+package util;
 
 public class Debuger {
 	boolean debug;

@@ -1,19 +1,17 @@
 package lexer;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import dataType.FinalSymbol;
 import dataType.SymbolTool;
-import debuger.Debuger;
 import lexer.token.FinalToken;
 import lexer.token.Position;
 import lexer.token.TokenFactory;
+import util.Constant;
+import util.Debuger;
+import util.FileUtil;
 
 public class Lexer {
 	//------------------ Static part ----------------------// 
@@ -42,7 +40,7 @@ public class Lexer {
 	
 	// Constructors
 	public Lexer(String filename) {
-		String matchStr = readFromFile(filename);
+		String matchStr = FileUtil.readFromFile(filename);
 		this.matchStr = matchStr;
 	}
 	
@@ -125,32 +123,8 @@ public class Lexer {
 		}
 	}
 	
-	private static String readFromFile(String fileName){
-		try {
-			String str;
-	        File file = new File(fileName);
-	        FileReader reader;
-			reader = new FileReader(file);
-			BufferedReader bReader = new BufferedReader(reader);
-	        StringBuilder sb = new StringBuilder();
-	        String s = "";
-	        while ((s =bReader.readLine()) != null) {
-	            sb.append(s + "\n");
-	            // System.out.println(s); // rowPrint
-	        }
-	        bReader.close();
-	        str = sb.toString();
-			debuger.println("源字符串是:");
-			debuger.println(str);
-			return str;
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new NullPointerException();
-		} 
-	}
-	
 	public static void main(String args[]) {
-		Lexer lexer = new Lexer("C:/Users/asus/Desktop/code.txt");
+		Lexer lexer = new Lexer(Constant.codeFile);
 		ArrayList<FinalToken> finalTokens = lexer.tokenize();
 		debuger.println("-----------匹配结果--------------");
 		for(FinalToken token : finalTokens){

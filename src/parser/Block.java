@@ -7,6 +7,7 @@ import java.util.Queue;
 import dataType.CombineSymbol;
 import dataType.FinalSymbol;
 import dataType.Symbol;
+import util.NotNullLinkedList;
 
 
 //------------------- Block part -------------------//
@@ -155,11 +156,21 @@ class Term implements Cloneable{
 		expected = new HashSet<FinalSymbol>();
 	}
 	
+	// 只能用来构建普通项
 	public Term(int ruleID) {
-		this.left = Define.getRule(ruleID).left;
+		this();
+		this.left = Define.getRule(ruleID).left; // FIXME: Term与Define相互引用
 		this.ruleID = ruleID;
-		right = new NotNullLinkedList<Symbol>();
-		expected = new HashSet<FinalSymbol>();
+	}
+	
+	// 只能用来构建规则
+	public Term(int ruleID, CombineSymbol left, ArrayList<Symbol> right) {
+		this();
+		this.ruleID = ruleID;
+		this.left = left;
+		for (Symbol symbol : right) {
+			this.right.add(symbol);
+		}
 	}
 	
 	// Functions

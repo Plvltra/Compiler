@@ -39,8 +39,8 @@ public class SymbolTool {
 		// TODO: change finalSymbol's content
 		// Others
 		finalSymbolMap.put(IDENTIFIER, "[a-zA-Z][a-zA-Z0-9_]*");
-		finalSymbolMap.put(CONST_REAL, "[-+]?\\d+(?:\\.\\d+)");
-		finalSymbolMap.put(CONST_INT, "[-+]?\\d+");
+		finalSymbolMap.put(CONST_REAL, "\\d+(?:\\.\\d+)");
+		finalSymbolMap.put(CONST_INT, "\\d+");
 		finalSymbolMap.put(CONST_STRING, "\"[^\"]+\""); 
 		finalSymbolMap.put(NEW_LINE, "\\n");
 		finalSymbolMap.put(SPACE, "[\\s]+"); // 包括空格,制表符,换页符等等

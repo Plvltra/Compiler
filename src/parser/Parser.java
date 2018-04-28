@@ -5,13 +5,16 @@ import java.util.Stack;
 
 import dataType.CombineSymbol;
 import dataType.FinalSymbol;
-import debuger.Debuger;
+import dataType.Symbol;
+import dataType.SymbolList;
 import lexer.Lexer;
 import lexer.token.AbstractToken;
 import lexer.token.CombineToken;
 import lexer.token.FinalToken;
 import parser.node.Node;
 import parser.node.NodeFactory;
+import util.Constant;
+import util.Debuger;
 
 
 //prog = expr'\0'
@@ -53,8 +56,8 @@ public class Parser {
 				return false;
 			}
 		}
-		Node node = nodeStack.peek();
-		System.out.println(node.getValue());
+		//Node node = nodeStack.peek();
+		//System.out.println(node.getValue());
 		return true;
 	}
 
@@ -74,12 +77,12 @@ public class Parser {
 		int currID = (int) stack.peek(); // 当前状态号
 		Status nextStatus = table.jump(currID, token.getSymbol());
 		if (nextStatus == null) {
-			printError(token);
+			printError(currID, token);
 			return false;
 		} else if (nextStatus.action == Action.shift 
 				|| nextStatus.action == Action.goTo) {
 			stack.push(token);
-			nodeStack.push(node);
+			//nodeStack.push(node);
 			stack.push(nextStatus.target);
 			debuger.println("push token->" + token.toString());
 			return true;
@@ -110,17 +113,18 @@ public class Parser {
 		while (num-- > 0) {
 			if (num % 2 != 0) {  // num奇数为符号
 				stack.pop();
-				Node node = nodeStack.pop();
-				nodes[num/2] = node;
+				//Node node = nodeStack.pop();
+				//nodes[num/2] = node;
 			} else {
 				stack.pop();
 			}
 		}
-		Node gotNode = NodeFactory.createNode(nodes,ruleID);
+		//Node gotNode = NodeFactory.createNode(nodes,ruleID);
 		CombineSymbol symbol = rule.left;
 		CombineToken token = new CombineToken(symbol); // FIXME:确定添加token的位置
 		debuger.println("reduce->" + token.toString());
-		return pushToken(stack, nodeStack, token, gotNode);
+		//return pushToken(stack, nodeStack, token, gotNode);
+		return pushToken(stack, nodeStack, token, null);
 	}
 	
 	public static void main(String args[]) {
@@ -136,7 +140,7 @@ public class Parser {
 //		Parser parser = new Parser(t);
 //		System.out.println(parser.check());
 		
-		Lexer lexer = new Lexer("C:/Users/asus/Desktop/code.txt");
+		Lexer lexer = new Lexer(Constant.codeFile);
 		ArrayList<FinalToken> t = lexer.tokenize();
 		Parser parser = new Parser(t);
 		System.out.println(parser.check());
@@ -149,9 +153,17 @@ public class Parser {
 		}
 	}
 	
-	private void printError(AbstractToken token) {
+	private void printError(int currID, AbstractToken token) {
 		debuger.println("匹配失败");
 		debuger.println("token是:" + token.toString());
+		debuger.print("期待集合是:");
+		Row row = table.getRow(currID);
+		for(Symbol symbol : SymbolList.values()) {
+			if(row.get(symbol) != null && symbol != token.getSymbol()) {
+				debuger.print(symbol.name() + ",");
+			}
+		}
+		debuger.println();
 	}
 	
 }

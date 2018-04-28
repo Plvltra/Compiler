@@ -41,4 +41,11 @@ public class SymbolList extends ArrayList<Symbol>{
 		return combineList;
 	}
 	
+//	public static void main(String[] args) {
+//		for(Symbol symbol : SymbolList.values()) {
+//			if(symbol.name() == " sp")
+//				System.out.println(symbol.name());
+//		}
+//	}
+	
 }
