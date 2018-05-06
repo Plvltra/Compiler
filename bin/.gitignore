@@ -1,6 +1,4 @@
-/parser/
-/lexer/
-/Util/
-/debuger/
 /util/
+/parser/
 /dataType/
+/lexer/

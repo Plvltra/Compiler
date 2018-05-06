@@ -24,6 +24,9 @@ public enum FinalSymbol implements Symbol{
 	INT,	
 	DOUBLE,
 	STRING,
+	MAIN,
+	WHILE,
+	RETURN,
 	FOR,
 	// Delimiters: 8
 	COMMA,

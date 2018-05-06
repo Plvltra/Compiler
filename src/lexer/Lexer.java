@@ -40,7 +40,7 @@ public class Lexer {
 	
 	// Constructors
 	public Lexer(String filename) {
-		String matchStr = FileUtil.readFromFile(filename);
+		String matchStr = FileUtil.readFile(filename);
 		this.matchStr = matchStr;
 	}
 	

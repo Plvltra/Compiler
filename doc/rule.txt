@@ -1,16 +1,74 @@
-0.	sp -> program  DOLLAR 
-1.	program -> program  statement
-2.	program -> 
+// 允许以'//'开头的注释行或空行
+// 规则行格式为:    ID.  (空)  归约名称  (空)  ->  (空)  组分名称
+// 规则从零开始
+0.	sp -> program  DOLLAR
+1.	program -> funcDef  program
+2.	program -> mainFunc
 
-3.	statement -> assighStatm
-4.	statement -> defineStatm
-5.	statement -> ifStatm
+3.	type -> INT
+4.	type -> DOUBLE
+5.	type -> STRING
+6.	type -> BOOL
+7.	operator -> PLUS
+8.	operator -> MINUS
+9.	operator -> MULTI
+10.	operator -> DIVIDE
+11.	constValue -> CONST_REAL
+12.	constValue -> CONST_INT
+13.	constValue -> CONST_STRING
+14.	constValue -> CONST_TRUE
+15.	constValue -> CONST_FALSE
 
-6.	assighStatm -> IDENTIFIER  ASSIGN  CONST_INT  SEMICOLON
-7.	defineStatm -> STRING  IDENTIFIER  SEMICOLON
-8.	ifStatm -> IF  LPAREN  CONST_TRUE  RPAREN  body
-9.	ifStatm -> IF  LPAREN  CONST_TRUE  RPAREN  body  elseStatm
-10.	elseStatm -> ELSE  ifStatm
-11.	elseStatm -> body
-12.	body -> LBRACE  program  RBRACE
-13.	body -> statement
+16.	arithmExpr -> expression  operator  expression
+17.	assignExpr -> IDENTIFIER  ASSIGN  expression
+18.	expression -> arithmExpr
+19.	expression -> assignExpr
+20.	expression -> funcCall
+21.	expression -> constValue 
+22.	expression -> IDENTIFIER
+
+23.	body -> LBRACE  statmList  RBRACE
+24.	condition -> LPAREN  expression  RPAREN
+
+25.	exprStatm -> expression  SEMICOLON
+26.	defineStatm -> type  IDENTIFIER  SEMICOLON
+27.	assighStatm -> assignExpr  SEMICOLON
+28.	ifElseStatm -> ifStatm 
+29.	ifElseStatm -> ifStatm  elseStatm
+30.	ifStatm -> IF  condition  body
+31.	elseStatm -> ELSE  ifElseStatm
+32.	elseStatm -> ELSE  body
+33.	forStatm -> FOR  LPAREN  statement  statement  expression  RPAREN  body
+34.	whileStatm -> WHILE  condition  body
+35.	returnStatm -> RETURN  IDENTIFIER  SEMICOLON
+36.	returnStatm -> RETURN  SEMICOLON
+
+37.	statement -> exprStatm
+38.	statement -> defineStatm
+39.	statement -> assighStatm
+40.	statement -> ifElseStatm
+41.	statement -> forStatm
+42.	statement -> whileStatm
+// TODO: change returnStatm is statement
+43.	statement -> returnStatm
+44.	statmList -> statmList  statement
+45.	statmList -> statement 
+46.	statmList -> 
+
+// TODO: IDENTIFIER -> MAIN
+47.	formalParam -> type IDENTIFIER
+48.	emptyFormalParamList ->  
+49.	formalParamList -> formalParam  COMMA  formalParamList
+50.	formalParamList -> formalParam
+// TODO: debug mainFunc extends funcDef 是否完全?
+51.	mainFunc -> INT  MAIN  LPAREN  emptyFormalParamList  RPAREN  body
+52.	funcDef -> type  IDENTIFIER  LPAREN  formalParamList  RPAREN   body
+53.	funcDef -> type  IDENTIFIER  LPAREN  emptyFormalParamList  RPAREN   body
+54.	funcDef -> mainFunc
+
+55.	actualParam -> IDENTIFIER
+56.	emptyActualParamList -> 
+57.	actualParamList -> actualParam  COMMA  actualParam
+58.	actualParamList -> actualParam  
+59.	funcCall -> IDENTIFIER  LPAREN  actualParamList  RPAREN
+60.	funcCall -> IDENTIFIER  LPAREN  emptyActualParamList  RPAREN

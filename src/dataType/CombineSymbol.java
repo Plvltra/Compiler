@@ -4,12 +4,41 @@ public enum CombineSymbol implements Symbol{
 	// TODO: change combineSymbol
 	sp,
 	program,
-	statement,
+	
+	type,
+	operator,
+	constValue,
+	
+	arithmExpr,
+	assignExpr,
+	expression,
+	
+	body,
+	condition,
+	
+	exprStatm,
 	defineStatm,
 	assighStatm,
+	ifElseStatm,
 	ifStatm,
 	elseStatm,
-	body,
+	forStatm,
+	whileStatm,
+	returnStatm,
+	
+	statement,
+	statmList,
+	
+	formalParam,
+	emptyFormalParamList,
+	formalParamList,
+	mainFunc,
+	funcDef,
+	
+	actualParam,
+	emptyActualParamList,
+	actualParamList,
+	funcCall,
 	;
 	
 	//test1

@@ -1,7 +1,18 @@
-string a;
+string fun(){
 if (true)
 {
 string a8;
  a8 = 1;
 }
+}
+
+int main(){
+	fun();
+int i;
+while(i+1){
+	return i;
+return;
+}
+}
+
 

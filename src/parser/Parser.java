@@ -11,8 +11,8 @@ import lexer.Lexer;
 import lexer.token.AbstractToken;
 import lexer.token.CombineToken;
 import lexer.token.FinalToken;
-import parser.node.Node;
-import parser.node.NodeFactory;
+import parser.nodeDefine.NodeFactory;
+import parser.nodeInterface.Node;
 import util.Constant;
 import util.Debuger;
 
@@ -61,8 +61,6 @@ public class Parser {
 		return true;
 	}
 
-	// TODO:stack的push,pop符号与nodeStack的push,pop节点捆绑 
-	
 	/**
 	 * 栈顶第一个数字符号为当前状态，压入一个符号根据规则对栈中进行处理，
 	 * 最后栈顶为下一步起始状态
@@ -82,7 +80,7 @@ public class Parser {
 		} else if (nextStatus.action == Action.shift 
 				|| nextStatus.action == Action.goTo) {
 			stack.push(token);
-			//nodeStack.push(node);
+			nodeStack.push(node);
 			stack.push(nextStatus.target);
 			debuger.println("push token->" + token.toString());
 			return true;
@@ -107,24 +105,45 @@ public class Parser {
 			Stack<Object> stack, Stack<Node> nodeStack, int ruleID) {
 		
 		Term rule = Define.getRule(ruleID);
-		int num = rule.right.size(); // 规则右侧符号数
-		num *= 2;					 // pop数量是符号数+状态数(符号数=状态数)
-		Node[] nodes = new Node[num];
-		while (num-- > 0) {
-			if (num % 2 != 0) {  // num奇数为符号
+		int symbolCount = rule.right.size(); // 规则右侧符号数
+		int tokenCount = 2 * symbolCount;	 // pop token数量是符号数+状态数(符号数=状态数)
+		Node[] nodes = new Node[symbolCount];
+		while (tokenCount-- > 0) {
+			if (tokenCount % 2 != 0) {  	// tokenCount奇数为符号
 				stack.pop();
-				//Node node = nodeStack.pop();
-				//nodes[num/2] = node;
+				Node node = nodeStack.pop();
+				nodes[tokenCount/2] = node;
 			} else {
 				stack.pop();
 			}
 		}
-		//Node gotNode = NodeFactory.createNode(nodes,ruleID);
+		
+		Node gotNode = NodeFactory.createNode(nodes,ruleID);
 		CombineSymbol symbol = rule.left;
 		CombineToken token = new CombineToken(symbol); // FIXME:确定添加token的位置
 		debuger.println("reduce->" + token.toString());
-		//return pushToken(stack, nodeStack, token, gotNode);
-		return pushToken(stack, nodeStack, token, null);
+		return pushToken(stack, nodeStack, token, gotNode);
+//		return pushToken(stack, nodeStack, token, null);
+	}
+	
+	private void printTokens() {
+		debuger.println("token串:");
+		for(FinalToken token : tokens) {
+			debuger.println(token.toString());
+		}
+	}
+	
+	private void printError(int currID, AbstractToken token) {
+		debuger.println("匹配失败");
+		debuger.println("获得token是:" + token.toString());
+		debuger.print("期待token是:");
+		Row row = table.getRow(currID);
+		for(Symbol symbol : SymbolList.values()) {
+			if(row.get(symbol) != null && symbol != token.getSymbol()) {
+				debuger.print(symbol.name() + ",");
+			}
+		}
+		debuger.println();
 	}
 	
 	public static void main(String args[]) {
@@ -144,26 +163,6 @@ public class Parser {
 		ArrayList<FinalToken> t = lexer.tokenize();
 		Parser parser = new Parser(t);
 		System.out.println(parser.check());
-	}
-	
-	private void printTokens() {
-		debuger.println("token串:");
-		for(FinalToken token : tokens) {
-			debuger.println(token.toString());
-		}
-	}
-	
-	private void printError(int currID, AbstractToken token) {
-		debuger.println("匹配失败");
-		debuger.println("token是:" + token.toString());
-		debuger.print("期待集合是:");
-		Row row = table.getRow(currID);
-		for(Symbol symbol : SymbolList.values()) {
-			if(row.get(symbol) != null && symbol != token.getSymbol()) {
-				debuger.print(symbol.name() + ",");
-			}
-		}
-		debuger.println();
 	}
 	
 }

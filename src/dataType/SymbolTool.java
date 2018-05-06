@@ -53,6 +53,9 @@ public class SymbolTool {
 		finalSymbolMap.put(INT, "int");	
 		finalSymbolMap.put(DOUBLE, "double");
 		finalSymbolMap.put(STRING, "string");
+		finalSymbolMap.put(MAIN, "main");
+		finalSymbolMap.put(WHILE, "while");
+		finalSymbolMap.put(RETURN, "return");
 		finalSymbolMap.put(FOR, "for");
 		// Delimiters
 		finalSymbolMap.put(COMMA, ",");

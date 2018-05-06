@@ -258,6 +258,18 @@ class Term implements Cloneable{
 	public void setLeft(CombineSymbol left) {
 		this.left = left;
 	}
+	
+	public int getRuleID() {
+		return this.ruleID;
+	}
+	
+	public CombineSymbol getLeft() {
+		return this.left;
+	}
+	
+	public Queue<Symbol> getRight() {
+		return this.right;
+	}
 
 	public boolean isEmpty() {
 		return right.isEmpty();
